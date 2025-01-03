@@ -40,11 +40,6 @@ class JoinBody extends ConsumerWidget {
           CustomElevatedButton(
             text: "회원가입",
             click: () {
-              // 1. 사용자 입력값 받기
-
-              // 2. 유효성검사 (생략)
-
-              // 3. GVM에게 위임
               gvm.join(_username.text.trim(), _email.text.trim(),
                   _password.text.trim());
             },
