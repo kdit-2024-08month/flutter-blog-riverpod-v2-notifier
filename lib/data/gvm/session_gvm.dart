@@ -52,7 +52,7 @@ class SessionGVM extends Notifier<SessionUser> {
         isLogin: true);
 
     // 3. Dio 토큰 세팅
-    dio.options.headers["jooho"] = accessToken;
+    dio.options.headers["Authorization"] = accessToken;
 
     Logger().d("로그인", dio.options.headers);
 
