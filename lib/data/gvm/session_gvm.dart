@@ -3,6 +3,7 @@ import 'package:flutter_blog/_core/utils/my_http.dart';
 import 'package:flutter_blog/data/repository/user_repository.dart';
 import 'package:flutter_blog/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 
 class SessionUser {
   int? id;
@@ -51,9 +52,9 @@ class SessionGVM extends Notifier<SessionUser> {
         isLogin: true);
 
     // 3. Dio 토큰 세팅
-    dio.options.headers = {"Authorization": accessToken};
+    dio.options.headers["jooho"] = accessToken;
 
-    //Logger().d(dio.options.headers);
+    Logger().d("로그인", dio.options.headers);
 
     Navigator.popAndPushNamed(mContext, "/post/list");
   }
@@ -83,7 +84,10 @@ class SessionGVM extends Notifier<SessionUser> {
     // 2. 상태 갱신
     state = SessionUser();
 
-    // 3. 화면이동
+    // 3. dio 갱신
+    dio.options.headers["Authorization"] = "";
+
+    // 4. 화면이동
     Navigator.popAndPushNamed(mContext, "/login");
   }
 
@@ -112,7 +116,7 @@ class SessionGVM extends Notifier<SessionUser> {
         accessToken: accessToken,
         isLogin: true);
 
-    dio.options.headers = {"Authorization": accessToken};
+    dio.options.headers["Authorization"] = accessToken;
 
     Navigator.popAndPushNamed(mContext, "/post/list");
   }

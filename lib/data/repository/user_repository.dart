@@ -23,7 +23,7 @@ class UserRepository {
     String accessToken = "";
     try {
       accessToken = response.headers["Authorization"]![0];
-      //Logger().d(accessToken);
+      Logger().d(accessToken);
     } catch (e) {}
 
     return (body, accessToken);
