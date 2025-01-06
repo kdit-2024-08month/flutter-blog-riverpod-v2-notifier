@@ -8,6 +8,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class PostDetailModel {
   Post post;
 
+  PostDetailModel({required this.post});
+
+  PostDetailModel copyWith({Post? post}) {
+    return PostDetailModel(post: post ?? this.post);
+  }
+
   PostDetailModel.fromMap(Map<String, dynamic> map) : post = Post.fromMap(map);
 }
 
