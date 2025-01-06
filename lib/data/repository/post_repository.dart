@@ -16,4 +16,10 @@ class PostRepository {
     Map<String, dynamic> body = response.data;
     return body;
   }
+
+  Future<Map<String, dynamic>> delete(int id) async {
+    Response response = await dio.delete("/api/post/$id");
+    Map<String, dynamic> body = response.data;
+    return body;
+  }
 }
