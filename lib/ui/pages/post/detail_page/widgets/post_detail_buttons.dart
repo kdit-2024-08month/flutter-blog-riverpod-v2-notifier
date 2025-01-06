@@ -7,33 +7,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PostDetailButtons extends ConsumerWidget {
   Post post;
+
   PostDetailButtons(this.post);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     SessionUser sessionUser = ref.read(sessionProvider);
 
-    if(sessionUser.id == post.user!.id!){
+    if (sessionUser.id == post.user!.id!) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           IconButton(
-            onPressed: () async {
-
-            },
+            onPressed: () async {},
             icon: const Icon(CupertinoIcons.delete),
           ),
           IconButton(
             onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => PostUpdatePage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => PostUpdatePage(post)));
             },
             icon: const Icon(CupertinoIcons.pen),
           ),
         ],
       );
-    }else{
+    } else {
       return SizedBox();
     }
   }
