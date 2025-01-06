@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_blog/data/gvm/post_event_bus_gvm.dart';
 import 'package:flutter_blog/data/model/post.dart';
 import 'package:flutter_blog/data/repository/post_repository.dart';
 import 'package:flutter_blog/main.dart';
-import 'package:flutter_blog/ui/pages/post/list_page/post_list_vm.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PostDetailModel {
@@ -58,9 +58,8 @@ class PostDetailVM extends AutoDisposeFamilyNotifier<PostDetailModel?, int> {
 
     // PostlistVM의 상태를 변경
     //ref.read(postListProvider.notifier).init(0);
-    ref.read(postListProvider.notifier).remove(id);
-
-    // EventBus Notifier -> 삭제했어!!
+    //ref.read(postListProvider.notifier).remove(id);
+    ref.read(postEventBusProvider.notifier).postDeleted(id);
 
     // 화면 파괴시 vm이 autoDispose 됨
     //Navigator.pop(mContext);

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_blog/data/gvm/post_event_bus_gvm.dart';
 import 'package:flutter_blog/data/model/post.dart';
 import 'package:flutter_blog/data/repository/post_repository.dart';
 import 'package:flutter_blog/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 
 class PostListModel {
   bool isFirst;
@@ -58,6 +60,17 @@ class PostListVM extends Notifier<PostListModel?> {
   @override
   PostListModel? build() {
     init(0);
+
+    ref.listen<PostEvent>(postEventBusProvider, (previous, next) {
+      if (next.deletedPostId != null) {
+        Logger().d("삭제 수신함 event 발생 ${next.deletedPostId}");
+        remove(next.deletedPostId!);
+      }
+      if (next.updatedPost != null) {
+        update(next.updatedPost!);
+      }
+    });
+
     return null;
   }
 
@@ -90,5 +103,18 @@ class PostListVM extends Notifier<PostListModel?> {
     model.posts = [post, ...model.posts];
 
     state = state!.copyWith(posts: model.posts);
+  }
+
+  void update(Post updatedPost) {
+    PostListModel model = state!;
+
+    List<Post> updatedPosts = model.posts.map((post) {
+      if (post.id == updatedPost.id) {
+        return updatedPost; // 수정된 게시글로 교체
+      }
+      return post; // 나머지는 그대로 유지
+    }).toList();
+
+    state = state!.copyWith(posts: updatedPosts); // 리스트 복사로 상태 반영
   }
 }
