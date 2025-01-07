@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blog/data/gvm/post_event_bus_gvm.dart';
 import 'package:flutter_blog/data/model/post.dart';
 import 'package:flutter_blog/data/repository/post_repository.dart';
 import 'package:flutter_blog/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import '../../../../data/gvm/post_event_bus_gvm.dart';
 
 class PostListModel {
   bool isFirst;
@@ -50,17 +51,26 @@ class PostListModel {
             .toList();
 }
 
-final postListProvider = NotifierProvider<PostListVM, PostListModel?>(() {
+final postListProvider =
+    NotifierProvider.autoDispose<PostListVM, PostListModel?>(() {
   return PostListVM();
 });
 
-class PostListVM extends Notifier<PostListModel?> {
+class PostListVM extends AutoDisposeNotifier<PostListModel?> {
   final refreshCtrl = RefreshController();
   final mContext = navigatorKey.currentContext!;
   PostRepository postRepository = const PostRepository();
 
   @override
   PostListModel? build() {
+    Logger().d("PostListVM build 실행됨");
+    ref.onDispose(
+      () {
+        Logger().d("PostListVM 파괴시 실행됨");
+        refreshCtrl.dispose(); // 가비지컬렉션이 바로 일어나지 않으니까!!
+      },
+    );
+
     init();
 
     ref.listen<PostEvent>(postEventBusProvider, (previous, next) {

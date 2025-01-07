@@ -4,6 +4,7 @@ import 'package:flutter_blog/data/model/post.dart';
 import 'package:flutter_blog/data/repository/post_repository.dart';
 import 'package:flutter_blog/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 
 class PostDetailModel {
   Post post;
@@ -29,6 +30,11 @@ class PostDetailVM extends AutoDisposeFamilyNotifier<PostDetailModel?, int> {
 
   @override
   PostDetailModel? build(id) {
+    ref.onDispose(
+      () {
+        Logger().d("PostDetailVM 파괴됨");
+      },
+    );
     init(id);
     return null;
   }

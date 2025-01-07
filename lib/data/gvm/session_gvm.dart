@@ -87,8 +87,21 @@ class SessionGVM extends Notifier<SessionUser> {
     // 3. dio 갱신
     dio.options.headers["Authorization"] = "";
 
-    // 4. 화면이동
-    Navigator.popAndPushNamed(mContext, "/login");
+    // 4. 화면 다 파괴하고, LoginPage 가기
+    Navigator.pushNamedAndRemoveUntil(mContext, "/login", (route) => false);
+
+    //Navigator.popAndPushNamed(mContext, "/login");
+
+    // 4.1 성공 : 화면이동 혹은 아래와 같이 이전화면을 다 날려버리면 됨.
+
+    // 지금까지의 모든 화면을 날리고 (route=false) 로긴화면으로 가는법
+    //Navigator.pushAndRemoveUntil(mContext, MaterialPageRoute(builder: (context) => LoginPage()),(route) => route.settings.name == "/write");
+    // Navigator.pushAndRemoveUntil(mContext,
+    //     MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
+
+    //ref.invalidate(postListProvider);
+    // 4.3 실패 : 혹은 화면이동할때 PostListView의 상태를 ref.invalidate()로 강제로 다 날리는 법
+    // 이건 안됨!! 왜냐하면 vm만 날라가고 ui는 pop이 안되서, 다시 화면 불러올때, vm이 초기화가 안됨
   }
 
   // 1. 절대 SessionUser가 있을 수가 없다.
