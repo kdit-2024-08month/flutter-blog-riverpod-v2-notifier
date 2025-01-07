@@ -5,6 +5,7 @@ import 'package:flutter_blog/data/repository/post_repository.dart';
 import 'package:flutter_blog/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class PostListModel {
   bool isFirst;
@@ -54,12 +55,13 @@ final postListProvider = NotifierProvider<PostListVM, PostListModel?>(() {
 });
 
 class PostListVM extends Notifier<PostListModel?> {
+  final refreshCtrl = RefreshController();
   final mContext = navigatorKey.currentContext!;
   PostRepository postRepository = const PostRepository();
 
   @override
   PostListModel? build() {
-    init(0);
+    init();
 
     ref.listen<PostEvent>(postEventBusProvider, (previous, next) {
       if (next.deletedPostId != null) {
@@ -74,9 +76,9 @@ class PostListVM extends Notifier<PostListModel?> {
     return null;
   }
 
-  Future<void> init(int page) async {
-    Map<String, dynamic> responseBody =
-        await postRepository.findAll(page: page);
+  // 1. 페이지 초기화
+  Future<void> init() async {
+    Map<String, dynamic> responseBody = await postRepository.findAll();
 
     if (!responseBody["success"]) {
       ScaffoldMessenger.of(mContext!).showSnackBar(
@@ -87,6 +89,34 @@ class PostListVM extends Notifier<PostListModel?> {
     }
 
     state = PostListModel.fromMap(responseBody["response"]);
+    refreshCtrl.refreshCompleted();
+  }
+
+  // 2. 페이징 로드
+  Future<void> nextList() async {
+    PostListModel model = state!;
+
+    if (model.isLast) {
+      await Future.delayed(Duration(milliseconds: 500));
+      refreshCtrl.loadComplete();
+      return;
+    }
+
+    Map<String, dynamic> responseBody =
+        await postRepository.findAll(page: state!.pageNumber + 1);
+
+    if (!responseBody["success"]) {
+      ScaffoldMessenger.of(mContext!).showSnackBar(
+        SnackBar(content: Text("게시글 로드 실패 : ${responseBody["errorMessage"]}")),
+      );
+      return;
+    }
+
+    PostListModel prevModel = state!;
+    PostListModel nextModel = PostListModel.fromMap(responseBody["response"]);
+
+    state = nextModel.copyWith(posts: [...prevModel.posts, ...nextModel.posts]);
+    refreshCtrl.loadComplete();
   }
 
   void remove(int id) {
